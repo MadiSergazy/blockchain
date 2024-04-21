@@ -136,7 +136,7 @@ func stamp(value any) ([]byte, error) {
 
 	// This stamp is used so signatures we produce when signing data
 	// are always unique to the Ardan blockchain.
-	stamp := []byte(fmt.Sprintf("\x19Ardan Signed Message:\n%d", len(v)))
+	stamp := []byte(fmt.Sprintf("\x19Madi Signed Message:\n%d", len(v)))
 
 	// Hash the stamp and txHash together in a final 32 byte array
 	// that represents the data.
