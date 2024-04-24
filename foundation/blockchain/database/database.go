@@ -14,5 +14,5 @@ type Database struct {
 	genesis genesis.Genesis
 	//latestBlock Block
 	accounts map[AccountID]Account
-	storage  Storage
+	// storage  Storage
 }
