@@ -10,13 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"go.uber.org/zap"
-
-	"github.com/ardanlabs/conf/v3"
-
 	"github.com/ardanlabs/blockchain/app/services/node/handlers"
-	"github.com/ardanlabs/blockchain/foundation/blockchain/genesis"
 	"github.com/ardanlabs/blockchain/foundation/logger"
+	"github.com/ardanlabs/conf/v3"
+	"github.com/ethereum/go-ethereum/crypto"
+	"go.uber.org/zap"
 )
 
 // build is the git version of this program. It is set using build flags in the makefile.
@@ -59,6 +57,16 @@ func run(log *zap.SugaredLogger) error {
 			PublicHost      string        `conf:"default:0.0.0.0:8080"`
 			PrivateHost     string        `conf:"default:0.0.0.0:9080"`
 		}
+		State struct {
+			Beneficiary string `conf:"default:miner1"`
+			DBPath      string `conf:"default:zblock/miner1/"`
+			// SelectStrategy string   `conf:"default:Tip"`
+			// OriginPeers    []string `conf:"default:0.0.0.0:9080"` //
+			// Consensus      string   `conf:"default:POW"`          // Change to POA to run Proof of Authority
+		}
+		NameService struct { //for the naming accounts
+			Folder string `conf:"default:zblock/accounts/"`
+		}
 	}{
 		Version: conf.Version{
 			Build: build,
@@ -98,15 +106,52 @@ func run(log *zap.SugaredLogger) error {
 	}
 	log.Infow("startup", "config", out)
 
-
 	// =========================================================================
 	// Blockchain Support
 
-	gen, err := genesis.Load()
+	// gen, err := genesis.Load()
+	// if err != nil {
+	// 	return fmt.Errorf("genesis load: %w", err)
+	// }
+	// log.Infow("startup", "genesis", gen)
+	// Need to load the private key file for the configured beneficiary so the
+	// account can get credited with fees and tips.
+	path := fmt.Sprintf("%s%s.ecdsa", cfg.NameService.Folder, cfg.State.Beneficiary)
+	privateKey, err := crypto.LoadECDSA(path)
 	if err != nil {
-		return fmt.Errorf("genesis load: %w", err)
+		return fmt.Errorf("unable to load private key for node: %w", err)
 	}
-	log.Infow("startup", "genesis", gen)
+
+	// The blockchain packages accept a function of this signature to allow the
+	// application to log. For now, these raw messages are sent to any websocket
+	// client that is connected into the system through the events package.
+	// evts := events.New()
+	ev := func(v string, args ...any) {
+		// const websocketPrefix = "viewer:"
+
+		s := fmt.Sprintf(v, args...)
+		log.Infow(s, "traceid", "00000000-0000-0000-0000-000000000000")
+		// if strings.HasPrefix(s, websocketPrefix) {
+		// 	evts.Send(s)
+		// }
+	}
+
+	// The state value represents the blockchain node and manages the blockchain
+	// database and provides an API for application support.
+	state, err := state.New(state.Config{
+		BeneficiaryID: database.PublicKeyToAccountID(privateKey.PublicKey),
+		Host:          cfg.Web.PrivateHost,
+		// Storage:       storage,
+		// Genesis:       genesis,
+		// SelectStrategy: cfg.State.SelectStrategy,
+		// KnownPeers:     peerSet,
+		// Consensus: cfg.State.Consensus,
+		EvHandler: ev,
+	})
+	if err != nil {
+		return err
+	}
+	defer state.Shutdown()
 
 	// =========================================================================
 	// Start Debug Service
