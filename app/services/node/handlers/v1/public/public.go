@@ -23,6 +23,16 @@ type Handlers struct {
 	// Evts *events.Events
 }
 
+func (h Handlers) StartMining(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	resp := struct {
+		Status string
+	}{
+		Status: "OK",
+	}
+
+	return web.Respond(ctx, w, resp, http.StatusOK)
+}
+
 // SubmitWalletTransaction adds new transactions to the mempool.
 func (h Handlers) SubmitWalletTransaction(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	v, err := web.GetValues(ctx)
