@@ -17,7 +17,7 @@
       "nonce": 1,
       "from": "0xdd6B972ffcc631a62CAE1BB9d80b7ff429c8ebA4",
       "to": "0xF01813E4B85e178A83e29B8E7bF26BD830a25f32",
-      "value": 100000,
+      "value": 100,
       "tip": 50,
       "data": null,
       "v": 30,
