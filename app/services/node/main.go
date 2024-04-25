@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/ardanlabs/blockchain/app/services/node/handlers"
+	"github.com/ardanlabs/blockchain/foundation/blockchain/database"
+	"github.com/ardanlabs/blockchain/foundation/blockchain/state"
 	"github.com/ardanlabs/blockchain/foundation/logger"
 	"github.com/ardanlabs/blockchain/foundation/nameservice"
 	"github.com/ardanlabs/conf/v3"
@@ -167,7 +169,7 @@ func run(log *zap.SugaredLogger) error {
 	if err != nil {
 		return err
 	}
-	defer state.Shutdown()
+	// defer state.Shutdown()
 
 	// =========================================================================
 	// Start Debug Service
@@ -211,7 +213,7 @@ func run(log *zap.SugaredLogger) error {
 		Log:      log,
 		State:    state,
 		NS:       ns,
-		Evts:     evts,
+		// Evts:     evts,
 	})
 
 	// Construct a server to service the requests against the mux.
