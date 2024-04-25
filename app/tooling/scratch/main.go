@@ -18,12 +18,40 @@ import (
 )
 
 func main() {
-	err := writeBlock()
+	err := readBlock()
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+}
+
+func readBlock() error {
+
+	d, err := disk.New("zblock/miner1")
+	if err != nil {
+		return err
+	}
+
+	blockData, err := d.GetBlock(1)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(blockData)
+
+	block, err := database.ToBlock(blockData)
+	if err != nil {
+		return err
+	}
+
+	if blockData.Header.TransRoot != block.MerkleTree.RootHex() {
+		return errors.New("invalid merkle root")
+	}
+
+	fmt.Println("mercle tree are matches")
+
+	return nil
 }
 
 func sign() error {
