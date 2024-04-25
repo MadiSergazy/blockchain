@@ -30,6 +30,8 @@ type State struct {
 	evHandler     EventHandler
 	consensus     string
 
+	dbPath string
+
 	// knownPeers *peer.PeerSet
 	// storage database.Storage
 	genesis genesis.Genesis
@@ -87,10 +89,17 @@ func New(cfg Config) (*State, error) {
 		return nil, err
 	}
 
+	// fmt.Println("mempoool PickBest: ", mempool)
+	// d := mempool.PickBest()
+	// fmt.Println("D: ", d)
+
+	// fmt.Println("mempoool: ", mempool)
+
 	// Create the State to provide support for managing the blockchain.
 	state := State{
 		beneficiaryID: cfg.BeneficiaryID,
 		host:          cfg.Host,
+		dbPath:        cfg.DbPath,
 		// storage:       cfg.Storage,
 		evHandler: ev,
 		// consensus:     cfg.Consensus,

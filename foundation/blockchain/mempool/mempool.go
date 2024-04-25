@@ -19,9 +19,11 @@ type Mempool struct {
 
 // New constructs a new mempool using the default sort strategy.
 func New() (*Mempool, error) {
-	return &Mempool{
+	m := Mempool{
 		pool: make(map[string]database.BlockTx),
-	}, nil
+	}
+
+	return &m, nil
 }
 
 // Upsert adds or replaces a transaction from the mempool.

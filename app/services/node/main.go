@@ -159,6 +159,7 @@ func run(log *zap.SugaredLogger) error {
 	state, err := state.New(state.Config{
 		BeneficiaryID: database.PublicKeyToAccountID(privateKey.PublicKey),
 		Host:          cfg.Web.PrivateHost,
+		DbPath:        cfg.State.DBPath,
 		// Storage:       storage,
 		// Genesis:       genesis,
 		// SelectStrategy: cfg.State.SelectStrategy,
