@@ -24,6 +24,18 @@ type Handlers struct {
 }
 
 func (h Handlers) StartMining(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	block, err := h.State.MineNewBlock(ctx)
+	if err != nil {
+		return v1.NewRequestError(err, http.StatusBadRequest)
+	}
+
+	h.Log.Infow("================================")
+	h.Log.Infow("Mined Block", "BLOCK", block)
+	h.Log.Infow("Mined Block", "BLOCK HASH", block.Hash())
+	h.Log.Infow("Mined Block", "BLOCK Nonce", block.Header.Nonce)
+	h.Log.Infow("================================")
+
 	resp := struct {
 		Status string
 	}{

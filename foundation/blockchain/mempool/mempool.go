@@ -74,6 +74,14 @@ func (mp *Mempool) PickBest(howMany ...uint16) []database.BlockTx {
 	return txs
 }
 
+// Count returns the current number of transaction in the pool.
+func (mp *Mempool) Count() int {
+	mp.mu.RLock()
+	defer mp.mu.RUnlock()
+
+	return len(mp.pool)
+}
+
 // =============================================================================
 
 // mapKey is used to generate the map key.

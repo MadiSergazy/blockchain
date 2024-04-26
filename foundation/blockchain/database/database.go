@@ -51,3 +51,11 @@ func New(genesis genesis.Genesis, storage Storage, evHandler func(v string, args
 func (db *Database) Close() {
 	db.storage.Close()
 }
+
+// LatestBlock returns the latest block.
+func (db *Database) LatestBlock() Block {
+	db.mu.RLock()
+	defer db.mu.RUnlock()
+
+	return db.latestBlock
+}
