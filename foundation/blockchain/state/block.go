@@ -62,5 +62,10 @@ func (s *State) MineNewBlock(ctx context.Context) (database.Block, error) {
 	// 	return database.Block{}, err
 	// }
 
+	for _, tx := range trans {
+		s.evHandler("state: remote Tx[%s]", tx)
+		s.mempool.Delete(tx)
+	}
+
 	return block, nil
 }

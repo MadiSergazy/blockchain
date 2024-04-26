@@ -23,7 +23,7 @@ func (s *State) UpsertWalletTransaction(signedTx database.SignedTx) error {
 	}
 
 	// s.Worker.SignalShareTx(tx)
-	// s.Worker.SignalStartMining()
+	s.Worker.SignalStartMining()
 
 	return nil
 }

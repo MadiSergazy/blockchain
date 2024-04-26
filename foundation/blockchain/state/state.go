@@ -23,7 +23,7 @@ type Worker interface {
 	Shutdown()
 	// Sync()
 	SignalStartMining()
-	// SignalCancelMining()
+	SignalCancelMining()
 	// SignalShareTx(blockTx database.BlockTx)
 }
 
@@ -38,7 +38,7 @@ type State struct {
 	beneficiaryID database.AccountID
 	host          string
 	evHandler     EventHandler
-	consensus     string
+	// consensus     string
 
 	dbPath string
 

@@ -2,11 +2,15 @@ package worker
 
 import (
 	"context"
+	"errors"
 	"sync"
+	"time"
+
+	"github.com/ardanlabs/blockchain/foundation/blockchain/state"
 )
 
 // this function is keeping goroutines alive
-func minungOperations(w *Worker) {
+func (w *Worker) miningOperations() {
 	w.evHandler("Worker mining operation G started")
 	defer w.evHandler("Worker mining operation G is complited")
 
@@ -77,6 +81,25 @@ func (w *Worker) runMiningOperaion() {
 			wg.Done()
 		}()
 
-		//work
+		t := time.Now()
+		_, err := w.state.MineNewBlock(ctx)
+		duration := time.Since(t)
+
+		w.evHandler("Worker: runMiningOperation: MINING: mining duration:[%v]", duration)
+
+		if err != nil {
+			switch {
+			case errors.Is(err, state.ErrNoTransactions):
+				w.evHandler("Worker: runMiningOperation: MINING: WARNING: No transactions in mempool")
+			case ctx.Err() != nil:
+				w.evHandler("Worker: runMiningOperation: MINING: CANCELL: complete")
+
+			default:
+				w.evHandler("Worker: runMiningOperation: MINING: ERROR: %s", err)
+
+			}
+			return
+		}
 	}()
+	wg.Wait()
 }

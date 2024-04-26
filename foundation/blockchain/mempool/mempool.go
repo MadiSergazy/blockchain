@@ -82,6 +82,21 @@ func (mp *Mempool) Count() int {
 	return len(mp.pool)
 }
 
+// Delete removed a transaction from the mempool.
+func (mp *Mempool) Delete(tx database.BlockTx) error {
+	mp.mu.Lock()
+	defer mp.mu.Unlock()
+
+	key, err := mapKey(tx)
+	if err != nil {
+		return err
+	}
+
+	delete(mp.pool, key)
+
+	return nil
+}
+
 // =============================================================================
 
 // mapKey is used to generate the map key.
