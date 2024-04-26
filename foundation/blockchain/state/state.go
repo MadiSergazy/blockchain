@@ -17,6 +17,16 @@ import (
 // occur in the processing of persisting blocks.
 type EventHandler func(v string, args ...any)
 
+// Worker interface represents the behavior required to be implemented by any
+// package providing support for mining, peer updates, and transaction sharing.
+type Worker interface {
+	Shutdown()
+	// Sync()
+	SignalStartMining()
+	// SignalCancelMining()
+	// SignalShareTx(blockTx database.BlockTx)
+}
+
 // =============================================================================
 
 // State manages the blockchain database.
@@ -38,7 +48,7 @@ type State struct {
 	mempool *mempool.Mempool
 	db      *database.Database
 
-	// Worker Worker
+	Worker Worker
 }
 
 // =============================================================================
@@ -116,4 +126,23 @@ func New(cfg Config) (*State, error) {
 
 	return &state, nil
 
+}
+
+// Shutdown cleanly brings the node down.
+func (s *State) Shutdown() error {
+	s.evHandler("state: shutdown: started")
+	defer s.evHandler("state: shutdown: completed")
+
+	// Make sure the database file is properly closed.
+	defer func() {
+		s.db.Close()
+	}()
+
+	// Stop all blockchain writing activity.
+	s.Worker.Shutdown()
+
+	// Wait for any resync to finish.
+	// s.resyncWG.Wait()
+
+	return nil
 }

@@ -170,7 +170,7 @@ func run(log *zap.SugaredLogger) error {
 	if err != nil {
 		return err
 	}
-	// defer state.Shutdown()
+	defer state.Shutdown()
 
 	// =========================================================================
 	// Start Debug Service
