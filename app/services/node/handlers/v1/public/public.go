@@ -31,7 +31,7 @@ func (h Handlers) StartMining(ctx context.Context, w http.ResponseWriter, r *htt
 	}
 
 	h.Log.Infow("================================")
-	h.Log.Infow("Mined Block", "BLOCK", block)
+	h.Log.Infow("Mined Block", "BLOCK", block.Header)
 	h.Log.Infow("Mined Block", "BLOCK HASH", block.Hash())
 	h.Log.Infow("Mined Block", "BLOCK Nonce", block.Header.Nonce)
 	h.Log.Infow("================================")

@@ -22,6 +22,8 @@ SHELL := /bin/bash
 # curl -il -X GET http://localhost:8080/v1/tx/uncommitted/list
 # curl -il -X GET http://localhost:8080/v1/start/mining
 
+mining: 
+	curl -il -X GET http://localhost:8080/v1/start/mining
 
 # ==============================================================================
 # Local support
