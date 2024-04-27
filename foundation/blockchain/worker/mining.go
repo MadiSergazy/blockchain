@@ -37,6 +37,7 @@ func (w *Worker) runMiningOperaion() {
 		return
 	}
 
+	//after mining operations check if a new operations shoud be signaled again
 	defer func() {
 		length := w.state.QueryMempoolLength()
 		if length > 0 {

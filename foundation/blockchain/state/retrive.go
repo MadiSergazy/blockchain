@@ -18,3 +18,11 @@ func (s *State) RetriveMempool() []database.BlockTx {
 
 	return s.mempool.PickBest()
 }
+
+func (s *State) RetriveAccounts() map[database.AccountID]database.Account {
+	return s.db.CopyAccounts()
+}
+
+func (s *State) RetriveALatestBlock() database.Block {
+	return s.db.LatestBlock()
+}

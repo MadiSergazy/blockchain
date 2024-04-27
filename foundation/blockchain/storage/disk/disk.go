@@ -4,7 +4,9 @@ package disk
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path"
 	"strconv"
@@ -84,4 +86,36 @@ func (d *Disk) GetBlock(num uint64) (database.BlockData, error) {
 func (d *Disk) getPath(blockNum uint64) string {
 	name := strconv.FormatUint(blockNum, 10)
 	return path.Join(d.dbPath, fmt.Sprintf("%s.json", name))
+}
+
+type diskIterator struct {
+	storage *Disk
+	current uint64
+	eoc     bool
+}
+
+// Next retrieves the next block from disk.
+func (di *diskIterator) Next() (database.BlockData, error) {
+	if di.eoc {
+		return database.BlockData{}, errors.New("end of chain")
+	}
+
+	di.current++
+	blockData, err := di.storage.GetBlock(di.current)
+	if errors.Is(err, fs.ErrNotExist) {
+		di.eoc = true
+	}
+
+	return blockData, err
+}
+
+// Done returns the end of chain value.
+func (di *diskIterator) Done() bool {
+	return di.eoc
+}
+
+// ForEach returns an iterator to walk through all the blocks
+// starting with block number 1.
+func (d *Disk) ForEach() database.Iterator {
+	return &diskIterator{storage: d}
 }

@@ -38,7 +38,7 @@ func Run(st *state.State, evHandler state.EventHandler) {
 
 	w.evHandler("worker: SignalStartMining: mining signaled")
 	// Update this node before starting any support G's.
-	// w.Sync()
+	w.Sync()
 
 	// Select the consensus operation to run.
 	// consensusOperation := w.powOperations
@@ -97,6 +97,7 @@ func (w *Worker) Shutdown() {
 	// w.SignalCancelMining()
 
 	w.evHandler("worker: shutdown: signal cancel mining")
+	w.SignalCancelMining()
 
 	w.evHandler("worker: shutdown: terminate goroutines")
 	close(w.shut)
