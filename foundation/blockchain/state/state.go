@@ -8,6 +8,7 @@ import (
 	"github.com/ardanlabs/blockchain/foundation/blockchain/database"
 	"github.com/ardanlabs/blockchain/foundation/blockchain/genesis"
 	"github.com/ardanlabs/blockchain/foundation/blockchain/mempool"
+	"github.com/ardanlabs/blockchain/foundation/blockchain/peer"
 	"github.com/ardanlabs/blockchain/foundation/blockchain/storage/disk"
 )
 
@@ -39,10 +40,9 @@ type State struct {
 	host          string
 	evHandler     EventHandler
 	// consensus     string
-
 	dbPath string
 
-	// knownPeers *peer.PeerSet
+	knownPeers *peer.PeerSet
 	// storage database.Storage
 	genesis genesis.Genesis
 	mempool *mempool.Mempool
@@ -62,8 +62,8 @@ type Config struct {
 	// Storage        database.Storage
 	// Genesis        genesis.Genesis
 	// SelectStrategy string
-	// KnownPeers     *peer.PeerSet
-	EvHandler EventHandler
+	KnownPeers *peer.PeerSet
+	EvHandler  EventHandler
 	// Consensus string
 }
 
@@ -115,10 +115,10 @@ func New(cfg Config) (*State, error) {
 		// consensus:     cfg.Consensus,
 		// allowMining:   true,
 
-		// knownPeers: cfg.KnownPeers,
-		genesis: genesis,
-		mempool: mempool,
-		db:      db,
+		knownPeers: cfg.KnownPeers,
+		genesis:    genesis,
+		mempool:    mempool,
+		db:         db,
 	}
 
 	// The Worker is not set here. The call to worker.Run will assign itself

@@ -4,15 +4,20 @@ package worker
 
 import (
 	"sync"
+	"time"
 
 	"github.com/ardanlabs/blockchain/foundation/blockchain/state"
 )
 
+// peerUpdateInterval represents the interval of finding new peer nodes
+// and updating the blockchain on disk with missing blocks.
+const peerUpdateInterval = time.Second * 10
+
 // Worker manages the POW workflows for the blockchain.
 type Worker struct {
-	state *state.State
-	wg    sync.WaitGroup
-	// ticker      time.Ticker
+	state  *state.State
+	wg     sync.WaitGroup
+	ticker time.Ticker
 	//we are signaling by only closing chanl
 	shut chan struct{} //if the only think that we are gonna do in chanel is closing it is bettter to use empty struct
 	//it is better to use bool when we are signaling with data BUT data is arbitrary(data itself is irrelevant)
@@ -27,8 +32,8 @@ type Worker struct {
 func Run(st *state.State, evHandler state.EventHandler) {
 
 	w := Worker{
-		state: st,
-		// ticker:       *time.NewTicker(peerUpdateInterval),
+		state:        st,
+		ticker:       *time.NewTicker(peerUpdateInterval),
 		shut:         make(chan struct{}),
 		startMining:  make(chan bool, 1),
 		cancelMining: make(chan bool, 1), //make(chan bool, 1),

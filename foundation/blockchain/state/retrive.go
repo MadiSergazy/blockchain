@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ardanlabs/blockchain/foundation/blockchain/database"
+	"github.com/ardanlabs/blockchain/foundation/blockchain/peer"
 )
 
 func (s *State) RetriveMempool() []database.BlockTx {
@@ -25,4 +26,12 @@ func (s *State) RetriveAccounts() map[database.AccountID]database.Account {
 
 func (s *State) RetriveALatestBlock() database.Block {
 	return s.db.LatestBlock()
+}
+
+func (s *State) RetriveKnownPeers() []peer.Peer {
+	return s.knownPeers.Copy(s.host)
+}
+
+func (s *State) RetriveHost() string {
+	return (s.host)
 }

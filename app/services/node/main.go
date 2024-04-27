@@ -57,15 +57,16 @@ func run(log *zap.SugaredLogger) error {
 			WriteTimeout    time.Duration `conf:"default:10s"`
 			IdleTimeout     time.Duration `conf:"default:120s"`
 			ShutdownTimeout time.Duration `conf:"default:20s"`
-			DebugHost       string        `conf:"default:0.0.0.0:7080"`
-			PublicHost      string        `conf:"default:0.0.0.0:8080"`
-			PrivateHost     string        `conf:"default:0.0.0.0:9080"`
+
+			DebugHost   string `conf:"default:0.0.0.0:7080"`
+			PublicHost  string `conf:"default:0.0.0.0:8080"` //this settings are representing origin node
+			PrivateHost string `conf:"default:0.0.0.0:9080"`
 		}
 		State struct {
 			Beneficiary string `conf:"default:miner1"`
 			DBPath      string `conf:"default:zblock/miner1/"`
 			// SelectStrategy string   `conf:"default:Tip"`
-			// OriginPeers    []string `conf:"default:0.0.0.0:9080"` //
+			OriginPeers []string `conf:"default:0.0.0.0:9080"` //
 			// Consensus      string   `conf:"default:POW"`          // Change to POA to run Proof of Authority
 		}
 		NameService struct { //for the naming accounts
@@ -139,6 +140,13 @@ func run(log *zap.SugaredLogger) error {
 	privateKey, err := crypto.LoadECDSA(path)
 	if err != nil {
 		return fmt.Errorf("unable to load private key for node: %w", err)
+	}
+
+	// A peer set is a collection of known nodes in the network so transactions
+	// and blocks can be shared.
+	peerSet := peer.NewPeerSet()
+	for _, host := range cfg.State.OriginPeers {
+		peerSet.Add(peer.New(host))
 	}
 
 	// The blockchain packages accept a function of this signature to allow the
